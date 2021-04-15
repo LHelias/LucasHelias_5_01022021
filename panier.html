@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+    <title>Orinoco, shopping en ligne</title>
+</head>
+
+<body>
+    <div class="container">
+        <header class="align-items-center d-flex">
+            <a class="w-25" href="index.html"><img src="images/Logo-Orinoco.png" class="img-fluid" alt="Responsive image"></a>
+            <a class="btn-lg btn-secondary ml-auto text-decoration-none">Panier : <span id="basketPrice"></span></a>
+            <a class="btn-lg btn-danger ml-auto text-decoration-none" style="cursor: pointer;" id="clear-basket">Vider panier</a>
+        </header>
+    </div>
+
+    <div id=main>
+        <!-- ici se place la liste des produits générés par panier.js -->
+    </div>
+    
+    <form class="container" action="" method="POST" id="contact-form">
+        <div class="mb-3">
+            <label for="input_prenom" class="form-label">Prénom</label>
+            <input type="text" class="form-control" name="input_prenom">
+            <small></small>
+        </div>
+        <div class="mb-3">
+            <label for="input_nom" class="form-label">Nom</label>
+            <input type="text" class="form-control" name="input_nom">
+            <small></small>
+        </div>
+        <div class="mb-3">
+            <label for="input_adresse" class="form-label">Votre adresse d'expédition</label>
+            <input type="text" class="form-control" name="input_adresse">
+            <small></small>
+        </div>
+        <div class="mb-3">
+            <label for="input_ville" class="form-label">Ville d'expédition</label>
+            <input type="text" class="form-control" name="input_ville">
+            <small></small>
+        </div>
+        <div class="mb-3">
+            <label for="input_email" class="form-label">Adresse Email</label>
+            <input type="email" class="form-control" name="input_email">
+            <small></small>
+        </div>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary" id="submit_btn">Valider la commande</button>
+        </div>
+        <small>Tous les champs sont obligatoires pour valider la commande</small>
+    </form>
+
+    <footer class="mt-4 text-center align-middle" style="height: 100px;">Orinoco, tout droits déposés, 2021</footer>
+    
+    <!-- charge le js de bootstraps -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+        crossorigin="anonymous"></script>
+    <script src="panier.js"></script>
+</body>
+
+</html>

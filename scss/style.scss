@@ -1,0 +1,22 @@
+@import "variable_overrides"; 
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+
+body{
+    background-color: #f3e9f1;
+}
+
+.dark{
+    color: $dark;
+}
+
+#navbarNav li {
+    border-right: 1px solid $gray-400;
+}
+
+#navbarNav li:last-child {
+    border-right: none
+}
+
+footer{
+    background-color: #d1bdc5;
+}
