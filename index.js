@@ -6,7 +6,7 @@ var teddies;
 var furniture;
 var cameras;
 const TEDDY="teddy";
-
+const basketPriceElement= document.getElementById("basketPrice");
 
 // Crée le constructeur des items
 class Item {
@@ -22,7 +22,6 @@ class Item {
 }
 
 function main() {
-    const basketPriceElement= document.getElementById("basketPrice");
     basketPriceElement.innerHTML = `${basketPrice/100},00€`;
     printItemsByCategory("teddies", "TEDDY", "https://oc-p5-api.herokuapp.com/api/teddies");
     getItemsByCategory("cameras", "CAMERA", "https://oc-p5-api.herokuapp.com/api/cameras");
