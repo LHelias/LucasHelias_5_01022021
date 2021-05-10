@@ -23,62 +23,36 @@ class Item {
 
 
 let main = function(){
-    getSingleItem(productCategory,productId);
+    getSingleItemFetch(productCategory,productId);
     if(localStorage.panier != undefined){
         basket = JSON.parse(localStorage.panier);
     };
     console.log("LocalStorage:",JSON.parse(localStorage.panier))
 };
 
-let getSingleItem = function(productCategory,productId){
-    if (productCategory == "TEDDY"){
-        let request = new XMLHttpRequest();
-        request.onreadystatechange = function(){
-            if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-                var response = JSON.parse(this.responseText);
-                console.log("response",response);
+function getSingleItemFetch (productCategory,productId){
+    if(productCategory == "TEDDY"){
+        fetch(`https://oc-p5-api.herokuapp.com/api/teddies/${productId}`, {
+            method: "GET",
+            headers: {
+                 "Content-Type": "application/json",
+                 "Accept": "application/json"
+            },
+        })
+            .then(response => response.json())
+            .then(function (json) {
+                var response = json;
+                console.log("response", response);
                 product = response;
                 product = parseItems(product, productCategory);
                 createItemElements(product);
                 console.log(productId, product);
-            }
-        }; 
-        request.open("GET", `https://oc-p5-api.herokuapp.com/api/teddies/${productId}` );
-        request.send(); 
-    
-    }
-        else if (productCategory == "CAMERA"){
-            let request = new XMLHttpRequest();
-            request.onreadystatechange = function(){
-                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-                    var response = JSON.parse(this.responseText);
-                    console.log("response",response);
-                    product = response;
-                    product = parseItems(product, productCategory);
-                    createItemElements(product);
-                    console.log(productId, product);
-                }
-            }; 
-            request.open("GET", `https://oc-p5-api.herokuapp.com/api/cameras/${productId}` );
-            request.send(); 
-        }
-        else if (productCategory == "FURNITURE"){
-            let request = new XMLHttpRequest();
-            request.onreadystatechange = function(){
-                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-                    var response = JSON.parse(this.responseText);
-                    console.log("response",response);
-                    product = response;
-                    product = parseItems(product, productCategory);
-                    createItemElements(product);
-                    console.log(productId, product);
-                }
-            }; 
-            request.open("GET", `https://oc-p5-api.herokuapp.com/api/furniture/${productId}` );
-            request.send(); 
-        };
-   
-}
+                return console.log(json);
+            })
+            .catch(err => console.log(err));
+    };
+
+}   
 
 //crée un objet myItem auquel on ajoute l'option de choix, et une catégorie.
 let parseItems = function(items, category){
@@ -112,29 +86,5 @@ let createItemElements = function(items){
     });
     displayBasketPrice(basketPrice);
 }
-
-let calculateBasketPrice = function(basket){
-    basketPrice = 0;
-    if (basket == []){
-        basketPrice = 0;
-    } else {
-        for (let i in basket){
-            console.log(basket[i].price);
-            basketPrice += basket[i].price;
-        }
-    }
-    console.log("prix du panier", basketPrice);
-    localStorage.setItem("prix", JSON.stringify(basketPrice));
-}
-
-let displayBasketPrice = function(basketPrice){
-    if (basketPrice == 0){
-        basketPriceElement.innerHTML = `0€`;
-    } else {basketPriceElement.innerHTML = `${basketPrice/100},00€`};
-    console.log("basket price", basketPrice);
-}
-
-const basketPriceElement= document.getElementById("basketPrice");
-basketPriceElement.innerHTML = `${basketPrice/100},00€`;
 
 main();

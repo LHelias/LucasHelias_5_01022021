@@ -1,5 +1,3 @@
-//const { format } = require("path");
-
 let basket = JSON.parse(localStorage.panier);
 let sortedBasket = [[], [], []];
 let basketPrice = localStorage.prix;
@@ -25,7 +23,7 @@ class Item {
 function main() {
     listenToClearBasket();
     createBasketElements(basket);
-    printBasketPrice(basketPrice);
+    displayBasketPrice(basketPrice);
     listenToFields();
     submitForm(basket);
     console.log("basket :", basket);
@@ -38,13 +36,13 @@ function createBasketElements(items) {
         let itemCard = document.createElement("div");
         let mainElement = document.getElementById("main");
         mainElement.appendChild(itemCard);
-        itemCard.innerHTML = `<div class="card mx-auto mt-3" style="max-width: 750px;"><div class="row g-0"><div class="col-md-4"><img src="${myItem.imageUrl}" class="img-thumbnail" alt="image produit"></div><div class="col-md-8"><div class="card-body"><a href="produit.html?category=${myItem._category}&idProduit=${myItem._id}"><h5 class="card-title">${myItem.name}</h5></a><p class="card-text">${myItem.description}</p><div class="d-flex justify-content-between align-items-center"> <p class="fw-bolder">${(myItem.price / 100 + ",00")}€</p><a class="btn btn-danger ml-auto text-decoration-none" id=${items[i]._id}>Retirer du panier</a> </div></div></div></div></div></div>`;
+        itemCard.innerHTML = `<div class="card mx-auto mt-3" style="max-width: 750px;"><div class="row g-0"><div class="col-md-4"><img src="${myItem.imageUrl}" class="img-thumbnail" alt="image produit"></div><div class="col-md-8"><div class="card-body"><a href="produit.html?category=${myItem._category}&idProduit=${myItem._id}"><h5 class="card-title">${myItem.name}</h5></a><p class="card-text">${myItem.description}</p><div class="d-flex justify-content-between align-items-center"> <p class="fw-bolder">${(myItem.price / 100 + ",00")}€</p><a class="btn btn-danger ml-auto text-decoration-none" id="button${i}">Retirer du panier</a> </div></div></div></div></div></div>`;
 
         // permet de supprimer le produit du panier et met à jour le prix
-        const supprimerDuPanier = document.getElementById(items[i]._id);
+        const supprimerDuPanier = document.getElementById(`button${i}`);
         supprimerDuPanier.addEventListener("click", function () {
             for (j in basket) {
-                if (basket[j]._id === items[i]._id) {
+                if (j === i) {
                     basket.splice(j, 1);
                     console.log("basket", basket);
                     calculateBasketPrice(basket);
@@ -57,32 +55,6 @@ function createBasketElements(items) {
             createBasketElements(basket);
         });
     };
-}
-
-function clearMainElement() {
-    let mainElement = document.getElementById("main");
-    mainElement.innerHTML = "";
-}
-
-
-function calculateBasketPrice(basket) {
-    basketPrice = 0;
-    if (basket == []) {
-        basketPrice = 0;
-    } else {
-        for (let i in basket) {
-            console.log(basket[i].price);
-            basketPrice += basket[i].price;
-        }
-    }
-    console.log("prix du panier", basketPrice);
-    localStorage.setItem("prix", basketPrice);
-}
-
-//Afficher le prix du panier en haut de la page
-const basketPriceElement = document.getElementById("basketPrice");
-function printBasketPrice(basketPrice){
-    basketPriceElement.innerHTML = `${basketPrice / 100},00€`;
 }
 
 //Permet de vider le panier en cliquant sur le bouton "vider panier"
@@ -121,7 +93,7 @@ function sortBasket(basket) {
     }
 }
 
-//Cette fonction crée l'objet contact
+//Cette fonction crée l'objet contact et postData
 function createPostData(contact, postData) {
     contact.firstName = contactForm.input_prenom.value;
     contact.lastName = contactForm.input_nom.value;
@@ -132,19 +104,20 @@ function createPostData(contact, postData) {
     postData.products = products;
 }
 
-
 //ecouter la modification de l'email
 function listenToFields(){
     contactForm.input_email.addEventListener('change', function () {
         validEmail(this);
+        
     });
     //ecouter la modification du prenom
     contactForm.input_prenom.addEventListener('change', function () {
-        validFirstName(this);
+        validTextField(this);
+       validFirstName = false;
     });
     //ecouter la modification du Nom
     contactForm.input_nom.addEventListener('change', function () {
-    validLastName(this);
+        validTextField(this);
     });
     //ecouter la modification de l'adresse
     contactForm.input_adresse.addEventListener('change', function () {
@@ -152,69 +125,26 @@ function listenToFields(){
     });
     //ecouter la modification de la ville
     contactForm.input_ville.addEventListener('change', function () {
-    validCity(this);
+        validTextField(this);
     });
 };
 
-//Validation Email
-function validEmail(inputEmail) {
-    let emailRegExp = new RegExp("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
-    // regEx trouvée sur https://www.youtube.com/watch?v=CreEhp8I-XA
-    let testEmail = emailRegExp.test(inputEmail.value);
-    console.log(testEmail);
-    let smallEmail = inputEmail.nextElementSibling;
-    if (testEmail) {
-        smallEmail.innerHTML = "adresse valide";
-        smallEmail.classList.add("text-success");
-        smallEmail.classList.remove("text-danger");
+//Validation des champs de texte
+function validTextField(input) {
+    let textFieldRegExp = new RegExp("^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$");
+    let testField = textFieldRegExp.test(input.value);
+    console.log(testField);
+    let smallField = input.nextElementSibling;
+    if (testField) {
+        smallField.innerHTML = "champ valide";
+        smallField.classList.add("text-success");
+        smallField.classList.remove("text-danger");
         return (true);
     }
     else {
-        smallEmail.innerHTML = "adresse invalide";
-        smallEmail.classList.add("text-danger");
-        smallEmail.classList.remove("text-success");
-        return (false);
-    }
-}
-
-//Validation prenom
-function validFirstName(inputFirstName) {
-    let firstNameRegExp = new RegExp("^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$");
-    // regEx trouvée sur https://openclassrooms.com/forum/sujet/regex-prenom-et-nom
-    let testFirstName = firstNameRegExp.test(inputFirstName.value);
-    console.log(testFirstName);
-    let smallFirstName = inputFirstName.nextElementSibling;
-    if (testFirstName) {
-        smallFirstName.innerHTML = "champ valide";
-        smallFirstName.classList.add("text-success");
-        smallFirstName.classList.remove("text-danger");
-        return (true);
-    }
-    else {
-        smallFirstName.innerHTML = "champ invalide";
-        smallFirstName.classList.add("text-danger");
-        smallFirstName.classList.remove("text-success");
-        return (false);
-    }
-}
-
-//Validation Nom
-function validLastName(inputLastName) {
-    let lastNameRegExp = new RegExp("^[a-zA-ZàáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$");
-    // regEx trouvée sur https://openclassrooms.com/forum/sujet/regex-prenom-et-nom
-    let testLastName = lastNameRegExp.test(inputLastName.value);
-    console.log(testLastName);
-    let smallLastName = inputLastName.nextElementSibling;
-    if (testLastName) {
-        smallLastName.innerHTML = "champ valide";
-        smallLastName.classList.add("text-success");
-        smallLastName.classList.remove("text-danger");
-        return (true);
-    }
-    else {
-        smallLastName.innerHTML = "champ invalide";
-        smallLastName.classList.add("text-danger");
-        smallLastName.classList.remove("text-success");
+        smallField.innerHTML = "champ invalide";
+        smallField.classList.add("text-danger");
+        smallField.classList.remove("text-success");
         return (false);
     }
 }
@@ -222,7 +152,6 @@ function validLastName(inputLastName) {
 //Validation adresse
 function validAddress(inputAddress) {
     let addressRegExp = new RegExp("^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$");
-    // regEx trouvée sur https://openclassrooms.com/forum/sujet/regex-prenom-et-nom
     let testAddress = addressRegExp.test(inputAddress.value);
     console.log(testAddress);
     let smallAddress = inputAddress.nextElementSibling;
@@ -240,23 +169,22 @@ function validAddress(inputAddress) {
     }
 }
 
-//Validation Ville
-function validCity(inputCity) {
-    let cityRegExp = new RegExp("^[a-zA-Z0-9àáâäãåąčćęèéêëėįìíîïłńòóôöõøùúûüųūÿýżźñçčšžÀÁÂÄÃÅĄĆČĖĘÈÉÊËÌÍÎÏĮŁŃÒÓÔÖÕØÙÚÛÜŲŪŸÝŻŹÑßÇŒÆČŠŽ∂ð ,.'-]+$");
-    // regEx trouvée sur https://openclassrooms.com/forum/sujet/regex-prenom-et-nom
-    let testCity = cityRegExp.test(inputCity.value);
-    console.log(testCity);
-    let smallCity = inputCity.nextElementSibling;
-    if (testCity) {
-        smallCity.innerHTML = "champ valide";
-        smallCity.classList.add("text-success");
-        smallCity.classList.remove("text-danger");
+//Validation Email
+function validEmail(inputEmail) {
+    let emailRegExp = new RegExp("^[a-zA-Z0-9.-_]+[@]{1}[a-zA-Z0-9.-_]+[.]{1}[a-z]{2,10}$", "g");
+    let testEmail = emailRegExp.test(inputEmail.value);
+    console.log(testEmail);
+    let smallEmail = inputEmail.nextElementSibling;
+    if (testEmail) {
+        smallEmail.innerHTML = "adresse valide";
+        smallEmail.classList.add("text-success");
+        smallEmail.classList.remove("text-danger");
         return (true);
     }
     else {
-        smallCity.innerHTML = "champ invalide";
-        smallCity.classList.add("text-danger");
-        smallCity.classList.remove("text-success");
+        smallEmail.innerHTML = "adresse invalide";
+        smallEmail.classList.add("text-danger");
+        smallEmail.classList.remove("text-success");
         return (false);
     }
 }
@@ -270,10 +198,10 @@ function submitForm(basket) {
         orderIds = [];
 
         //Si tous les champs sont valides, on continue la création de la commande.
-        if (validFirstName(contactForm.input_prenom) &&
-            validLastName(contactForm.input_nom) &&
+        if (validTextField(contactForm.input_prenom) &&
+            validTextField(contactForm.input_nom) &&
             validAddress(contactForm.input_adresse) &&
-            validCity(contactForm.input_ville) &&
+            validTextField(contactForm.input_ville) &&
             validEmail(contactForm.input_email)) {
             if (basket.length == 0) {
                 //Si le panier est vide, on affiche une alerte
@@ -306,52 +234,6 @@ function submitForm(basket) {
                         })
                         .catch(err => console.log(err));
                 };
-                if (sortedBasket[1].length != 0) {
-                    //validation de la commande de d'appareils photo
-                    parseProducts(sortedBasket[1]);
-                    let contact = new Object;
-                    let postData = new Object;
-                    createPostData(contact, postData);
-                    fetch("https://oc-p5-api.herokuapp.com/api/cameras/order", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Accept": "application/json"
-                        },
-                        body: JSON.stringify(postData)
-                    })
-                        .then(response => response.json())
-                        .then(function (json) {
-                            orderIds.push(json.orderId);
-                            localStorage.setItem("orderIds", JSON.stringify(orderIds));
-                            console.log(orderIds);
-                            return console.log(json);
-                        })
-                        .catch(err => console.log(err));
-                };
-                if (sortedBasket[2].length != 0) {
-                    //validation de la commande de meubles
-                    parseProducts(sortedBasket[2]);
-                    let contact = new Object;
-                    let postData = new Object;
-                    createPostData(contact, postData);
-                    fetch("https://oc-p5-api.herokuapp.com/api/furniture/order", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Accept": "application/json"
-                        },
-                        body: JSON.stringify(postData)
-                    })
-                        .then(response => response.json())
-                        .then(function (json) {
-                            orderIds.push(json.orderId);
-                            localStorage.setItem("orderIds", JSON.stringify(orderIds));
-                            console.log(orderIds);
-                            return console.log(json);
-                        })
-                        .catch(err => console.log(err));
-                }
                 document.getElementById("submit_btn").setAttribute("disabled","");
                 document.getElementById("submit_btn").innerHTML = "validation commande...";
                 //Ouverture de la fenètre de confirmation

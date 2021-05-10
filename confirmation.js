@@ -3,6 +3,7 @@ let idCommandes;
 idCommandes = JSON.parse(localStorage.orderIds);
 console.log(JSON.parse(localStorage.orderIds))
 
+//Crée un élémént enfant de idCommandes pour y afficher l'id d'une commande.
 function createIdCommandesElement(idCommande) {
     let mainElement = document.getElementById("idCommandes");
     let idCommandesElement = document.createElement("p");

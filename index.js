@@ -6,7 +6,6 @@ var teddies;
 var furniture;
 var cameras;
 const TEDDY="teddy";
-const basketPriceElement= document.getElementById("basketPrice");
 
 // Crée le constructeur des items
 class Item {
@@ -22,46 +21,34 @@ class Item {
 }
 
 function main() {
-    basketPriceElement.innerHTML = `${basketPrice/100},00€`;
-    printItemsByCategory("teddies", "TEDDY", "https://oc-p5-api.herokuapp.com/api/teddies");
-    getItemsByCategory("cameras", "CAMERA", "https://oc-p5-api.herokuapp.com/api/cameras");
-    getItemsByCategory("furniture", "FURNITURE", "https://oc-p5-api.herokuapp.com/api/furniture");
+    displayBasketPrice(basketPrice);
+    printItemsByCategoryFetch("teddies", "TEDDY", "https://oc-p5-api.herokuapp.com/api/teddies");
+}
+
+//Crée la requete vers le serveur pour appeller les items par catégorie et les affiche à l'écran
+
+function printItemsByCategoryFetch(Items, Category, ItemsUrl){
+    fetch(ItemsUrl, {
+                        method: "GET",
+                        headers: {
+                             "Content-Type": "application/json",
+                             "Accept": "application/json"
+                        },
+                    })
+                        .then(response => response.json())
+                        .then(function (json) {
+                            var response = json;
+                            console.log("response", response);
+                            Items = response;
+                            Items = parseItems(Items, Category);
+                            createItemsElements(Items);
+                            console.log(Category, Items);
+                            return console.log(json);
+                        })
+                        .catch(err => console.log(err));
 }
 
 
-//Crée la requete AJAX vers le serveur pour appeller les items par catégorie et les affiche à l'écran
-function printItemsByCategory(Items, Category, ItemsUrl) {
-    let request = new XMLHttpRequest();
-    request.onreadystatechange = function () {
-        if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-            var response = JSON.parse(this.responseText);
-            console.log("response", response);
-            Items = response;
-            Items = parseItems(Items, Category);
-            createItemsElements(Items);
-            console.log(Category, Items);
-        }
-    };
-    request.open("GET", ItemsUrl);
-    request.send();
-}
-//Crée la requete AJAX vers le serveur pour appeller les items par catégorie et stocke les données dans une variable teddy/camera/furniture
-function getItemsByCategory(Items, Category, ItemsUrl) {
-    let request = new XMLHttpRequest();
-    request.onreadystatechange = function () {
-        if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
-            var response = JSON.parse(this.responseText);
-            console.log("response", response);
-            Items = response;
-            Items = parseItems(Items, Category);
-            //createItemsElements(Items);
-            console.log(Category, Items);
-        }
-    };
-    request.open("GET", ItemsUrl);
-    request.send();
-}
-    
 // Cette fonction crée un objet myItem pour tous les items et ajoute la catégorie aux items
 function parseItems(items, category) {
     let itemsTemp = [];
@@ -73,14 +60,6 @@ function parseItems(items, category) {
     if (category == "TEDDY") {
         teddies = itemsTemp;
         console.log("teddies:", teddies);
-    }
-    else if (category == "CAMERA") {
-        cameras = itemsTemp;
-        console.log("Cameras:", cameras);
-    }
-    else if (category == "FURNITURE") {
-        furniture = itemsTemp;
-        console.log("furniture:", furniture);
     }
     return itemsTemp;
 }
@@ -110,85 +89,5 @@ function createItemsElements(items) {
         });
     }
 }
-
-function calculateBasketPrice(basket) {
-    basketPrice = 0;
-    if (basket === []) {
-        basketPrice = 0;
-    } else {
-        for (let i in basket) {
-            console.log(basket[i].price);
-            basketPrice += basket[i].price;
-        }
-    }
-    console.log("prix du panier", basketPrice);
-    localStorage.setItem("prix", basketPrice);
-}
-
-function displayBasketPrice(basketPrice) {
-    if (basketPrice == 0) {
-        basketPriceElement.innerHTML = `0€`;
-    } else { basketPriceElement.innerHTML = `${basketPrice / 100},00€`; };
-    console.log("basket price", basketPrice);
-}
-
-//Cette fonction vide l'élément main de tous les éléments enfants.
-function clearMainElement() {
-    let mainElement = document.getElementById("main");
-    mainElement.innerHTML = "";
-}
-
-//Ici on écoute les clics sur les boutons de catégories et on crée les cartes item correspondantes.
-
-    // const allCategories = document.getElementById("allCategories");
-    // allCategories.addEventListener("click",function(){
-    //     items = [];
-    //     for(let i in teddies){
-    //         items.push(teddies[i]);
-    //     }
-    //     for(let i in furniture){
-    //         items.push(furniture[i]);
-    //     }
-    //     for(let i in cameras){
-    //         items.push(cameras[i]);
-    //     }
-    //     clearMainElement();
-    //     createItemsElements(items);
-    //     console.log(items)
-    // });
-
-    const category1 = document.getElementById("category1");
-    category1.addEventListener("click",function(){
-        items = [];
-        console.log("teddies", teddies);
-        for(let i in teddies){
-            items.push(teddies[i]);
-        }
-        clearMainElement();
-        createItemsElements(items);
-        console.log(items)
-    });
-
-    const category2 = document.getElementById("category2");
-    category2.addEventListener("click",function(){
-        items = [];
-        for(let i in cameras){
-            items.push(cameras[i]);
-        }
-        clearMainElement();
-        createItemsElements(items);
-        console.log(items)
-    });
-
-    const category3 = document.getElementById("category3");
-    category3.addEventListener("click",function(){
-        items = [];
-        for(let i in furniture){
-            items.push(furniture[i]);
-        }
-        clearMainElement();
-        createItemsElements(items);
-        console.log(items)
-    });
 
 main();
